@@ -1,0 +1,36 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements. See the NOTICE file distributed with this
+# work for additional information regarding copyright ownership. The ASF
+# licenses this file to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+# ----------------------------------------------------------------------------
+# Standard Maven Wrapper launcher script.
+# Downloads the Maven distribution defined in .mvn/wrapper/maven-wrapper.properties
+# (if not already present) and delegates to it. Requires network access to
+# repo.maven.apache.org on first run.
+# ----------------------------------------------------------------------------
+
+set -e
+
+WRAPPER_DIR="$(cd "$(dirname "$0")" && pwd)"
+WRAPPER_PROPERTIES="$WRAPPER_DIR/.mvn/wrapper/maven-wrapper.properties"
+WRAPPER_JAR="$WRAPPER_DIR/.mvn/wrapper/maven-wrapper.jar"
+
+if [ ! -f "$WRAPPER_JAR" ]; then
+  echo "maven-wrapper.jar not found."
+  echo "This sandbox had no network access to download it. On a machine with"
+  echo "internet access, run:  mvn -N io.takari:maven:wrapper -Dmaven=3.9.9"
+  echo "or install Maven directly and run 'mvn spring-boot:run' instead."
+  exit 1
+fi
+
+JAVA_EXE="${JAVA_HOME:+$JAVA_HOME/bin/}java"
+
+exec "$JAVA_EXE" \
+  -classpath "$WRAPPER_JAR" \
+  "-Dmaven.multiModuleProjectDirectory=$WRAPPER_DIR" \
+  org.apache.maven.wrapper.MavenWrapperMain "$@"
