@@ -1,18 +1,19 @@
 import axios from 'axios'
 
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '') : ''
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: rawBaseUrl ? `${rawBaseUrl}/api` : '/api',
 })
 
-// Backend origin, used only to resolve uploaded-file URLs (profile picture,
+// Backend origin, used to resolve uploaded-file URLs (profile picture,
 // resume, certificates) returned by the server, e.g. "/uploads/12/picture/x.jpg".
-// Set VITE_API_BASE_URL in your .env if the backend isn't on localhost:8080.
-export const API_ORIGIN = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+export const API_ORIGIN = rawBaseUrl
 
 export const resolveFileUrl = (path) => {
   if (!path) return null
   if (path.startsWith('http://') || path.startsWith('https://')) return path
-  return `${API_ORIGIN}${path}`
+  return `${API_ORIGIN}${path.startsWith('/') ? path : '/' + path}`
 }
 
 api.interceptors.request.use((config) => {
